@@ -63,7 +63,7 @@ int nmac_ini(char *dev){
 	bpf_u_int32 net_ip;
 	bpf_u_int32 net_mask;
 	struct bpf_program bpf_filter;
-	char bpf_filter_string[] = "ip proto 253 and ip dst ";
+	char bpf_filter_string[50] = "ip proto 253 and ip dst ";
 	char errbuf[255];
 
 	pcap_lookupnet(dev, &net_ip, &net_mask, errbuf);
@@ -98,7 +98,7 @@ int nmac_con(){
 	libnet_ptag_t ip_protocol_tag = 0;
 	libnet_ptag_t ether_protocol_tag = 0;
 	u_int16_t payload_size;
-	//杩炴帴NetMagic
+	//连接NetMagic
 	u_int16_t nmac_seq = 0;
 	struct nmac_hdr nmac_head = { 1, 0, htons(0), 0, NMAC_CON, htons(1), 0 };
 	memcpy(payload, &nmac_head, sizeof(struct nmac_hdr));
