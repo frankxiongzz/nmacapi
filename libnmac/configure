@@ -1,0 +1,25 @@
+## install libpcap and libpcap
+cd m4*
+./configure
+make && make install
+cd ..
+cd flex*
+./configure
+make && make install
+cd ..
+cd bison*
+./configure
+make && make install
+cd ..
+cd libpcap*
+./configure
+make && make install
+cd ..
+cd libnet*
+./configure
+make && make install
+cd ..
+ldconfig
+## install libnmac
+cd libnmac*
+./install

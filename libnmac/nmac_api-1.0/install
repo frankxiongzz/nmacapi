@@ -1,0 +1,5 @@
+gcc -o libnmac.o -c libnmac.c
+ar rcs libnmac.a libnmac.o
+cp libnmac.a /usr/lib/
+cp libnmac.h /usr/include
+echo "libnmac1.0 install succeed"
