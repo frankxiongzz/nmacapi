@@ -156,7 +156,7 @@ int nmac_wr(u_int32_t addr, int num, u_int32_t *data){
 	u_int32_t * data_net;
 	data_net = (u_int32_t*) malloc(num * sizeof(u_int32_t));
 	for (i = 0; i < num; i++){
-		data_net[i] = data[i];
+		data_net[i] = htonl(data[i]);
 	}
 	u_int16_t payload_size;
 	struct nmac_hdr write_request = { 1, 0, htons(write_seq), 0, NMAC_WR, htons(num), 0 };
