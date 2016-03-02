@@ -26,6 +26,6 @@ int nmac_wr(u_int32_t addr, int num, u_int32_t *data);
  * addr: vitual address
  * num: the number of date read RAM
  * */
-u_char *nmac_rd(u_int32_t addr, int num);
+u_int32_t *nmac_rd(u_int32_t addr, int num);
 
 #endif /* NMAC_API_H_ */
