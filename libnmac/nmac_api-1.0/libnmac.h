@@ -9,23 +9,23 @@
 #ifndef NMAC_API_H_
 #define NMAC_API_H_
 
-/* if initialed, return 1. if not return 0*/
+/* if initialed, return 0. if not return 1*/
 int nmac_ini(char *dev);
 
-/* if connected, return 1. if not return 0*/
+/* if connected, return 0. if not return 1*/
 int nmac_con();
 
-/* if write success, return 1. if not return 0
+/* if write success, return 0. if not return 1
  * addr: vitual address
  * num: the number of date write to RAM
  * data: the data write to RAM
  * */
 int nmac_wr(u_int32_t addr, int num, u_int32_t *data);
 
-/* if read success, return 1. if not return 0
+/* if read success, return 0. if not return 1
  * addr: vitual address
  * num: the number of date read RAM
  * */
-u_int32_t *nmac_rd(u_int32_t addr, int num);
+const u_int32_t *nmac_rd(u_int32_t addr, int num);
 
 #endif /* NMAC_API_H_ */
