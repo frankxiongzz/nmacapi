@@ -19,8 +19,8 @@
 
 #define ETH_LEN 14
 #define IP_LEN 20
-
-
+#define NMAC_LEN 10
+#define TIME_OUT 2
 #pragma pack(push)
 #pragma pack(1)
 struct nmac_hdr{
@@ -53,7 +53,7 @@ int read_seq = 0;
 int nmac_connected_flag = 0;
 int read_success_flag = 0;
 int write_success_flag = 0;
-u_int32_t *globe_pkt;
+const u_int32_t *globe_data;
 
 void parsing_callback(u_char *useless, const struct pcap_pkthdr* pkthdr,
 		const u_char* packet);
@@ -131,7 +131,7 @@ int nmac_con(){
 	while (1) {
 		gettimeofday(&end, NULL);
 		pcap_dispatch(pcap_handle, 1, parsing_callback, NULL);
-		if ((float) ((1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)) / 1000000) > 2.5) {
+		if ((float) ((1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)) / 1000000) > TIME_OUT) {
 			printf("connect timeout!\n");
 			return 1;
 			break;
@@ -153,7 +153,7 @@ int nmac_wr(u_int32_t addr, int num, u_int32_t *data){
 	u_int32_t w_addr;
 	w_addr = htonl(addr);
 	int i;
-	u_int32_t * data_net;
+	u_int32_t *data_net;
 	data_net = (u_int32_t*) malloc(num * sizeof(u_int32_t));
 	for (i = 0; i < num; i++){
 		data_net[i] = htonl(data[i]);
@@ -194,7 +194,7 @@ int nmac_wr(u_int32_t addr, int num, u_int32_t *data){
 	while (1) {
 		gettimeofday(&end, NULL);
 		pcap_dispatch(pcap_handle, 1, parsing_callback, NULL);
-		if ((float) ((1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)) / 1000000) > 2.5) {
+		if ((float) ((1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec)) / 1000000) > TIME_OUT) {
 			printf("addr:%02x write failed!\n", addr);
 			return 1;
 			break;
@@ -206,7 +206,7 @@ int nmac_wr(u_int32_t addr, int num, u_int32_t *data){
 	}
 }
 
-u_int32_t *nmac_rd(u_int32_t addr,int num){
+const u_int32_t *nmac_rd(u_int32_t addr,int num){
 	u_char *payload;
 	payload = (u_char*) malloc(1480 * sizeof(u_char));
 	read_seq++;
@@ -250,14 +250,14 @@ u_int32_t *nmac_rd(u_int32_t addr,int num){
 	while (1) {
 		gettimeofday(&end, NULL);
 		pcap_dispatch(pcap_handle, 1, parsing_callback, NULL);
-		if ((float) ((1000000 * (end.tv_sec - start.tv_sec)  +  (end.tv_usec - start.tv_usec)) / 1000000) > 2.5) {
+		if ((float) ((1000000 * (end.tv_sec - start.tv_sec)  +  (end.tv_usec - start.tv_usec)) / 1000000) > TIME_OUT) {
 			printf("addr:%02x read failed! \n", addr);
 			return NULL;
 			break;
 		}
 		if (read_success_flag == 1) {
 			read_success_flag = 0;
-			return globe_pkt;
+			return globe_data;
 			break;
 		}
 	}
@@ -288,7 +288,7 @@ void parsing_callback(u_char *useless, const struct pcap_pkthdr* pkthdr, const u
 			if (read_seq == ntohs(Nmac_hdr->seq)) {
 				read_success_flag = 1;
 				printf("read success\n");
-
+				/*
 				struct libnet_ipv4_hdr *ip_headr = (struct libnet_ipv4_hdr*)(packet + 14);
 				int read_data_len = ntohs(ip_headr->ip_len) - 20 -10;
 				u_int32_t *read_data = (u_int32_t*)malloc(read_data_len/4 * sizeof(u_int32_t));
@@ -299,8 +299,10 @@ void parsing_callback(u_char *useless, const struct pcap_pkthdr* pkthdr, const u
 				for(i=0;i<read_data_len/4;i++){
 					read_data[i] = ntohl(read_data_tmp[i]);
 					printf("%08x\n",read_data[i]);
-				}
-				globe_pkt = read_data;
+				}*/
+				const u_char *p_data;
+				p_data = packet + ETH_LEN + IP_LEN + NMAC_LEN;
+				globe_data = (const u_int32_t *)p_data;
 			}
 			break;
 		}
